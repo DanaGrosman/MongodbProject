@@ -22,15 +22,19 @@ public class DBManager {
 	private MongoCollection<Order> ordersCollection;
 	private MongoCollection<Customer> customersCollection;
 	MongoCollection<Document> hotelsDocsCollection;
+	MongoCollection<Document> ordersDocsCollection;
+
 	private GeneralDAO dao;
 
 	public DBManager(MongoCollection<Hotel> hotelsCollection, MongoCollection<Order> ordersCollection,
-			MongoCollection<Customer> customersCollection, MongoCollection<Document> hotelsDocsCollection) {
+			MongoCollection<Customer> customersCollection, MongoCollection<Document> hotelsDocsCollection,
+			MongoCollection<Document> ordersDocsCollection) {
 		this.hotelsCollection = hotelsCollection;
 		this.ordersCollection = ordersCollection;
 		this.customersCollection = customersCollection;
 		this.hotelsDocsCollection = hotelsDocsCollection;
-		this.dao = new GeneralDAO(ordersCollection, customersCollection, hotelsCollection, hotelsDocsCollection);
+		this.ordersDocsCollection = ordersDocsCollection;
+		this.dao = new GeneralDAO(ordersCollection, customersCollection, hotelsCollection, hotelsDocsCollection, ordersDocsCollection);
 	}
 
 	public void initCustomersCollection() {

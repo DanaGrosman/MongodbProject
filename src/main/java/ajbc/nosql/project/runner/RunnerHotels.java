@@ -62,7 +62,8 @@ public class RunnerHotels {
 					hotelsDocsCollection, ordersDocsCollection);
 
 			// init DB
-//			DBManager dbManager = new DBManager(hotelsCollection, ordersCollection, customersCollection, hotelsDocsCollection);
+//			DBManager dbManager = new DBManager(hotelsCollection, ordersCollection, customersCollection,
+//					hotelsDocsCollection, ordersDocsCollection);
 //			dbManager.initHotelsCollection();
 //			dbManager.initCustomersCollection();
 //			dbManager.initOrdersCollection();
@@ -92,7 +93,7 @@ public class RunnerHotels {
 //			sortHotelsByTotalIncomes(dao);
 
 			// Q7
-			showSumOfAllOrders(dao);
+//			showSumOfAllOrders(dao);
 		}
 	}
 
