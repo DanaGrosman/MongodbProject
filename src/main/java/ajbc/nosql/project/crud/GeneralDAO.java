@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
@@ -24,18 +25,23 @@ import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Updates.*;
-import com.mongodb.client.model.Sorts.*;
+import static com.mongodb.client.model.Sorts.*;
+import static com.mongodb.client.model.Accumulators.*;
 
 public class GeneralDAO {
 	private MongoCollection<Order> ordersCollection;
 	private MongoCollection<Customer> customersCollection;
 	private MongoCollection<Hotel> hotelsCollection;
+	private MongoCollection<Document> hotelsDocsCollection;
+	MongoCollection<Document> ordersDocsCollection;
 
 	public GeneralDAO(MongoCollection<Order> ordersCollection, MongoCollection<Customer> customersCollection,
-			MongoCollection<Hotel> hotelsCollection) {
+			MongoCollection<Hotel> hotelsCollection, MongoCollection<Document> hotelsDocsCollection, MongoCollection<Document> ordersDocsCollection) {
 		this.ordersCollection = ordersCollection;
 		this.customersCollection = customersCollection;
 		this.hotelsCollection = hotelsCollection;
+		this.hotelsDocsCollection = hotelsDocsCollection;
+		this.ordersDocsCollection = ordersDocsCollection;
 	}
 
 	public Order insertOneOrder(Order order) {
@@ -106,6 +112,7 @@ public class GeneralDAO {
 
 	private Hotel insertOrdersByHotelId(ObjectId hotelId, ObjectId orderId) {
 		Hotel hotel = getHotelById(hotelId);
+		Order order = getOrderById(orderId);
 		List<ObjectId> orders = hotel.getOrders();
 		orders.add(orderId);
 
@@ -118,9 +125,10 @@ public class GeneralDAO {
 		Bson updateRooms = set("rooms", hotel.getRooms());
 		Bson updateStreet = set("street", hotel.getStreet());
 		Bson updateOrders = set("orders", orders);
+		Bson updateTotalIncome = set("totalIncome", hotel.getTotalIncome() + order.getTotalPrice());
 
 		Bson update = combine(updateCity, updateCountry, updateName, updateNumber, updatePriceFerNight, updateRank,
-				updateRooms, updateStreet, updateOrders);
+				updateRooms, updateStreet, updateOrders, updateTotalIncome);
 
 		FindOneAndUpdateOptions optionAfter = new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER);
 		hotel = hotelsCollection.findOneAndUpdate(eq("_id", hotelId), update, optionAfter);
@@ -130,6 +138,11 @@ public class GeneralDAO {
 	private Hotel getHotelById(ObjectId hotelId) {
 		Hotel hotel = hotelsCollection.find(eq("_id", hotelId)).first();
 		return hotel;
+	}
+
+	private Order getOrderById(ObjectId orderId) {
+		Order order = ordersCollection.find(eq("_id", orderId)).first();
+		return order;
 	}
 
 	public List<Order> getOrdersByCustomerId(ObjectId customerId) {
@@ -243,11 +256,20 @@ public class GeneralDAO {
 		return roomIndex;
 	}
 
-	public List<Hotel> getSortedHotelsByTotalIncome() {
-		Bson pipeline = lookup("orders", "_id", "hotelId", "hotel_order");
-		List<Hotel> hotelsJoined = hotelsCollection.aggregate(Arrays.asList(pipeline)).into(new ArrayList<>());
-		hotelsJoined.forEach(System.out::println);
-		return null;
+	public List<Document> getSortedHotelsByTotalIncome() {
+		Bson sort = sort(descending("totalIncome"));
+		Bson project = project(fields(excludeId(), include("name", "totalIncome")));
+
+		List<Document> hotels = hotelsDocsCollection.aggregate(Arrays.asList(sort, project)).into(new ArrayList<>());
+		return hotels;
+	}
+
+	public float getSumOfAllOrders() {
+		double totalSum;
+		Bson group = group("$orderId", sum("sumTotalPrice", "$totalPrice"));
+		totalSum = (double) ordersDocsCollection.aggregate(Arrays.asList(group)).into(new ArrayList<>()).get(0).get("sumTotalPrice");
+
+		return (float) totalSum;
 	}
 
 }

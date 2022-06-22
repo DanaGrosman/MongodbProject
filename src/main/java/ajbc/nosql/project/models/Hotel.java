@@ -15,6 +15,7 @@ public class Hotel {
 	private List<Room> rooms;
 	private float priceFerNight;
 	private List<ObjectId> orders;
+	private float totalIncome;
 
 	public Hotel(ObjectId id, String name, String street, int number, String city, String country, int rank,
 			List<Room> rooms, float priceFerNight, List<ObjectId> orders) {
@@ -29,6 +30,7 @@ public class Hotel {
 		this.rooms = rooms;
 		this.priceFerNight = priceFerNight;
 		this.orders = orders;
+		totalIncome = 0f;
 	}
 
 	public Hotel(String name, String street, int number, String city, String country, int rank, List<Room> rooms,
@@ -43,6 +45,7 @@ public class Hotel {
 		this.rooms = rooms;
 		this.priceFerNight = priceFerNight;
 		this.orders = orders;
+		totalIncome = 0f;
 	}
 
 	public Hotel() {
@@ -128,11 +131,19 @@ public class Hotel {
 		this.orders = orders;
 	}
 
+	public float getTotalIncome() {
+		return totalIncome;
+	}
+
+	public void setTotalIncome(float totalIncome) {
+		this.totalIncome = totalIncome;
+	}
+
 	@Override
 	public String toString() {
 		return "Hotel [id=" + id + ", name=" + name + ", street=" + street + ", number=" + number + ", city=" + city
 				+ ", country=" + country + ", rank=" + rank + ", rooms=" + rooms + ", priceFerNight=" + priceFerNight
-				+ ", orders=" + orders + "]";
+				+ ", orders=" + orders + ", totalIncome=" + totalIncome + "]";
 	}
 
 }

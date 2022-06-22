@@ -20,15 +20,17 @@ import ajbc.nosql.project.models.Room;
 public class DBManager {
 	private MongoCollection<Hotel> hotelsCollection;
 	private MongoCollection<Order> ordersCollection;
-	private MongoCollection<Customer> customersCollection;	
+	private MongoCollection<Customer> customersCollection;
+	MongoCollection<Document> hotelsDocsCollection;
 	private GeneralDAO dao;
-	
+
 	public DBManager(MongoCollection<Hotel> hotelsCollection, MongoCollection<Order> ordersCollection,
-			MongoCollection<Customer> customersCollection) {
+			MongoCollection<Customer> customersCollection, MongoCollection<Document> hotelsDocsCollection) {
 		this.hotelsCollection = hotelsCollection;
 		this.ordersCollection = ordersCollection;
 		this.customersCollection = customersCollection;
-		this.dao = new GeneralDAO(ordersCollection, customersCollection, hotelsCollection);
+		this.hotelsDocsCollection = hotelsDocsCollection;
+		this.dao = new GeneralDAO(ordersCollection, customersCollection, hotelsCollection, hotelsDocsCollection);
 	}
 
 	public void initCustomersCollection() {
@@ -43,12 +45,12 @@ public class DBManager {
 
 	public void initOrdersCollection() {
 		List<Order> orders = Arrays.asList(
-				new Order(new ObjectId("62b2fb811b5519215052216f"), new ObjectId("62b2fb811b55192150522172"),
-						100, LocalDateTime.of(2022, 8, 25, 8, 0), 3, 2490f),
-				new Order(new ObjectId("62b2fb811b5519215052216f"), new ObjectId("62b2fb811b55192150522173"),
-						101, LocalDateTime.of(2022, 7, 15, 8, 0), 2, 1660f),
-				new Order(new ObjectId("62b2fb811b5519215052216f"), new ObjectId("62b2fb811b55192150522173"),
-						101, LocalDateTime.of(2022, 10, 20, 8, 0), 4, 3320f));
+				new Order(new ObjectId("62b37e40d9197745d14bcfef"), new ObjectId("62b37e40d9197745d14bcff2"), 100,
+						LocalDateTime.of(2022, 8, 25, 8, 0), 3, 3600f),
+				new Order(new ObjectId("62b37e40d9197745d14bcff0"), new ObjectId("62b37e40d9197745d14bcff3"), 101,
+						LocalDateTime.of(2022, 7, 15, 8, 0), 2, 1100f),
+				new Order(new ObjectId("62b37e40d9197745d14bcff0"), new ObjectId("62b37e40d9197745d14bcff4"), 101,
+						LocalDateTime.of(2022, 10, 20, 8, 0), 4, 4400f));
 
 		List<Order> orderDocs = dao.insertOrders(orders);
 		orderDocs.forEach(System.out::println);

@@ -55,10 +55,14 @@ public class RunnerHotels {
 			MongoCollection<Hotel> hotelsCollection = myDb.getCollection("hotels", Hotel.class);
 			MongoCollection<Order> ordersCollection = myDb.getCollection("orders", Order.class);
 			MongoCollection<Customer> customersCollection = myDb.getCollection("customers", Customer.class);
-			GeneralDAO dao = new GeneralDAO(ordersCollection, customersCollection, hotelsCollection);
+			MongoCollection<Document> hotelsDocsCollection = myDb.getCollection("hotels");
+			MongoCollection<Document> ordersDocsCollection = myDb.getCollection("orders");
+
+			GeneralDAO dao = new GeneralDAO(ordersCollection, customersCollection, hotelsCollection,
+					hotelsDocsCollection, ordersDocsCollection);
 
 			// init DB
-//			DBManager dbManager = new DBManager(hotelsCollection, ordersCollection, customersCollection);
+//			DBManager dbManager = new DBManager(hotelsCollection, ordersCollection, customersCollection, hotelsDocsCollection);
 //			dbManager.initHotelsCollection();
 //			dbManager.initCustomersCollection();
 //			dbManager.initOrdersCollection();
@@ -85,12 +89,22 @@ public class RunnerHotels {
 //			cancelOrder(new ObjectId("62b3706540c4df4364500f51"), dao);
 
 			// Q6
-			sortHotelsByTotalIncomes(dao);
+//			sortHotelsByTotalIncomes(dao);
+
+			// Q7
+			showSumOfAllOrders(dao);
 		}
 	}
 
+	private static void showSumOfAllOrders(GeneralDAO dao) {
+		float sumAllOrders = dao.getSumOfAllOrders();
+		System.out.println(sumAllOrders);
+
+	}
+
 	private static void sortHotelsByTotalIncomes(GeneralDAO dao) {
-		List<Hotel> sortedHotels = dao.getSortedHotelsByTotalIncome();
+		List<Document> sortedHotels = dao.getSortedHotelsByTotalIncome();
+		System.out.println(sortedHotels);
 	}
 
 	private static void cancelOrder(ObjectId orderId, GeneralDAO dao) {
