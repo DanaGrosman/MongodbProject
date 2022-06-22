@@ -152,12 +152,38 @@ public class GeneralDAO {
 		return hotels;
 	}
 
-	public int cheakIfHotelHasAvailableRoomByDate(LocalDateTime date, ObjectId hotelId) {
+	public int cheakIfHotelHasAvailableRoomByDate(LocalDateTime date, int numOfNights, ObjectId hotelId) {
 		int roomNumber = -1;
+		boolean isAvailable = true;
 
-		
-		
-		
+		Hotel hotel = getHotelById(hotelId);
+		List<Room> rooms = hotel.getRooms();
+
+		for (Room room : rooms) {
+			List<LocalDateTime> dateTimes = room.getUnavailableDates();
+
+			if (dateTimes.isEmpty()) {
+				isAvailable = true;
+				roomNumber = room.getNumber();
+				break;
+			}
+
+			for (int i = 0; i < numOfNights; i++) {
+				date = date.plusDays(i);
+				for (LocalDateTime dateTime : dateTimes) {
+					if (dateTime.equals(date)) {
+						isAvailable = false;
+						break;
+					}
+				}
+			}
+
+			if (isAvailable) {
+				roomNumber = room.getNumber();
+				break;
+			}
+		}
+
 		return roomNumber;
 	}
 

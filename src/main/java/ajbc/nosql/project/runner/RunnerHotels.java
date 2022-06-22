@@ -70,12 +70,12 @@ public class RunnerHotels {
 //			getHotelsByCity("Paris", dao);
 			
 			// Q3
-			System.out.println(getIfHotelHasAvailableRoom(LocalDateTime.of(2022, 8, 20, 8, 0), new ObjectId("62b2b476f68a30210226cf6a"), dao));
+			System.out.println(getIfHotelHasAvailableRoom(LocalDateTime.of(2022, 8, 26, 8, 0), 2, new ObjectId("62b2fb811b5519215052216e"), dao));
 		}
 	}
 
-	private static int getIfHotelHasAvailableRoom(LocalDateTime date, ObjectId hotelId, GeneralDAO dao) {
-		int roomNumber = dao.cheakIfHotelHasAvailableRoomByDate(date, hotelId);
+	private static int getIfHotelHasAvailableRoom(LocalDateTime date, int numOfNights, ObjectId hotelId, GeneralDAO dao) {
+		int roomNumber = dao.cheakIfHotelHasAvailableRoomByDate(date, numOfNights, hotelId);
 		return roomNumber;
 	}
 
