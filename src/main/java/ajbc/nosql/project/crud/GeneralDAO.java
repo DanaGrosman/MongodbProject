@@ -9,11 +9,13 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.InsertManyResult;
+import com.mongodb.client.result.InsertOneResult;
 
 import ajbc.nosql.project.DbManager.DBManager;
 import ajbc.nosql.project.models.Customer;
@@ -24,7 +26,7 @@ import ajbc.nosql.project.models.Room;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
-import com.mongodb.client.model.Updates.*;
+import static com.mongodb.client.model.Updates.*;
 import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 
@@ -38,6 +40,23 @@ public class GeneralDAO {
 		this.ordersCollection = ordersCollection;
 		this.customersCollection = customersCollection;
 		this.hotelsCollection = hotelsCollection;
+	}
+
+	public Order insertOneOrder(Order order) {
+		InsertOneResult insertOneResult = ordersCollection.insertOne(order);
+		System.out.println(insertOneResult.wasAcknowledged());
+
+		Bson limit = limit(1);
+		Bson sort = sort(Sorts.descending("orderDate"));
+
+		List<Order> results = ordersCollection.aggregate(Arrays.asList(sort, limit)).into(new ArrayList<>());
+
+		insetOrdersByCustomerId(order.getCustomerId(), order.getId());
+		insertOrdersByHotelId(order.getHotelId(), order.getId());
+		updateRoomsByHotelId(order.getHotelId(), order.getRoomNumber(), order.getStartDate(),
+				order.getNumberOfNights());
+
+		return results.get(0);
 	}
 
 	public List<Order> insertOrders(List<Order> orders) {
@@ -156,8 +175,10 @@ public class GeneralDAO {
 		int roomNumber = -1;
 		boolean isAvailable = true;
 
-		Hotel hotel = getHotelById(hotelId);
-		List<Room> rooms = hotel.getRooms();
+		Bson match = match(eq("_id", hotelId));
+		Bson project = project(include("rooms"));
+		List<Room> rooms = hotelsCollection.aggregate(Arrays.asList(match, project)).into(new ArrayList<>()).get(0)
+				.getRooms();
 
 		for (Room room : rooms) {
 			List<LocalDateTime> dateTimes = room.getUnavailableDates();
@@ -185,6 +206,29 @@ public class GeneralDAO {
 		}
 
 		return roomNumber;
+	}
+
+	public Order cancelOrderById(ObjectId orderId) {
+		Order order = ordersCollection.find(eq("_id", orderId)).first();
+		
+		Bson match = match(eq("_id", orderId));
+		Bson project = project(include("customerId", "hotelId"));
+		ObjectId customerId = ordersCollection.aggregate(Arrays.asList(match, project)).into(new ArrayList<>()).get(0)
+				.getCustomerId();
+		ObjectId hotelId = ordersCollection.aggregate(Arrays.asList(match, project)).into(new ArrayList<>()).get(0)
+				.getHotelId();
+
+		// delete from ordersCollection
+		ordersCollection.findOneAndDelete(eq("_id", orderId));
+
+		// delete from customer
+		Bson pull = pull("orders", orderId);
+		customersCollection.findOneAndUpdate(eq("_id", customerId), pull);
+		
+		// delete from hotel
+		hotelsCollection.findOneAndUpdate(eq("_id", hotelId), pull);
+		
+		return order;
 	}
 
 }

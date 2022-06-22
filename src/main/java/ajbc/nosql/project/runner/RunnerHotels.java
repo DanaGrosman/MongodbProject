@@ -62,19 +62,44 @@ public class RunnerHotels {
 //			dbManager.initHotelsCollection();
 //			dbManager.initCustomersCollection();
 //			dbManager.initOrdersCollection();
-			
+
 			// Q1
 //			getOrdersByCustomerId(new ObjectId("62b2d3fa8fdb3c5587a853bc"), dao);
 
 			// Q2
 //			getHotelsByCity("Paris", dao);
-			
+
 			// Q3
-			System.out.println(getIfHotelHasAvailableRoom(LocalDateTime.of(2022, 8, 26, 8, 0), 2, new ObjectId("62b2fb811b5519215052216e"), dao));
+//			System.out.println(getIfHotelHasAvailableRoom(LocalDateTime.of(2022, 8, 26, 8, 0), 2, new ObjectId("62b2fb811b5519215052216e"), dao));
+
+			// Q4
+//			LocalDateTime date = LocalDateTime.of(2022, 9, 1, 8, 0);
+//			int roomNumber = getIfHotelHasAvailableRoom(date, 2, new ObjectId("62b2fb811b5519215052216d"), dao);
+//			System.out.println(roomNumber);
+//			if (roomNumber != -1) {
+//				addOrderToDB(new Order(new ObjectId("62b2fb811b5519215052216d"),
+//						new ObjectId("62b2fb811b55192150522172"), roomNumber, date, 2, 2400), dao);
+//			}
+
+			// Q5
+			cancelOrder(new ObjectId("62b3082d623a354897153b36"), dao);
+
+			//
 		}
 	}
 
-	private static int getIfHotelHasAvailableRoom(LocalDateTime date, int numOfNights, ObjectId hotelId, GeneralDAO dao) {
+	private static void cancelOrder(ObjectId orderId, GeneralDAO dao) {
+		Order order = dao.cancelOrderById(orderId);
+		System.out.println(order);
+	}
+
+	private static void addOrderToDB(Order order, GeneralDAO dao) {
+		order = dao.insertOneOrder(order);
+		System.out.println(order);
+	}
+
+	private static int getIfHotelHasAvailableRoom(LocalDateTime date, int numOfNights, ObjectId hotelId,
+			GeneralDAO dao) {
 		int roomNumber = dao.cheakIfHotelHasAvailableRoomByDate(date, numOfNights, hotelId);
 		return roomNumber;
 	}
@@ -88,5 +113,5 @@ public class RunnerHotels {
 		List<Order> orders = dao.getOrdersByCustomerId(customerId);
 		orders.forEach(System.out::println);
 	}
-	
+
 }
