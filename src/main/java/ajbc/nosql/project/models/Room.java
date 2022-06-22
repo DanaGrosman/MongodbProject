@@ -1,5 +1,9 @@
 package ajbc.nosql.project.models;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
 public class Room {
@@ -7,6 +11,7 @@ public class Room {
 	private int number;
 	private int numberOfGuests;
 	private boolean hasABath;
+	private List<LocalDateTime> unavailableDates;
 
 	public Room(ObjectId id, int number, int numberOfGuests, boolean hasABath) {
 		super();
@@ -14,6 +19,7 @@ public class Room {
 		this.number = number;
 		this.numberOfGuests = numberOfGuests;
 		this.hasABath = hasABath;
+		unavailableDates = new ArrayList<LocalDateTime>();
 	}
 
 	public Room(int number, int numberOfGuests, boolean hasABath) {
@@ -21,9 +27,11 @@ public class Room {
 		this.number = number;
 		this.numberOfGuests = numberOfGuests;
 		this.hasABath = hasABath;
+		unavailableDates = new ArrayList<LocalDateTime>();
 	}
 
 	public Room() {
+		unavailableDates = new ArrayList<LocalDateTime>();
 	}
 
 	public ObjectId getId() {
@@ -58,10 +66,18 @@ public class Room {
 		this.hasABath = hasABath;
 	}
 
+	public List<LocalDateTime> getUnavailableDates() {
+		return unavailableDates;
+	}
+
+	public void setUnavailableDates(List<LocalDateTime> unavailableDates) {
+		this.unavailableDates = unavailableDates;
+	}
+
 	@Override
 	public String toString() {
 		return "Room [id=" + id + ", number=" + number + ", numberOfGuests=" + numberOfGuests + ", hasABath=" + hasABath
-				+ "]";
+				+ ", unavailableDates=" + unavailableDates + "]";
 	}
 
 }

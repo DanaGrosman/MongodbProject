@@ -6,31 +6,34 @@ import org.bson.types.ObjectId;
 
 public class Order {
 	private ObjectId id;
-	private int hotelId;
-	private int customerId;
+	private ObjectId hotelId;
+	private ObjectId customerId;
+	private int roomNumber;
 	private LocalDateTime orderDate;
 	private LocalDateTime startDate;
 	private int numberOfNights;
 	private float totalPrice;
 
-	public Order(ObjectId id, int hotelId, int customerId, LocalDateTime orderDate, LocalDateTime startDate,
+	public Order(ObjectId id, ObjectId hotelId, ObjectId customerId, int roomNumber, LocalDateTime startDate,
 			int numberOfNights, float totalPrice) {
 		super();
 		this.id = id;
 		this.hotelId = hotelId;
 		this.customerId = customerId;
-		this.orderDate = orderDate;
+		this.roomNumber = roomNumber;
+		this.orderDate = LocalDateTime.now();
 		this.startDate = startDate;
 		this.numberOfNights = numberOfNights;
 		this.totalPrice = totalPrice;
 	}
 
-	public Order(int hotelId, int customerId, LocalDateTime orderDate, LocalDateTime startDate, int numberOfNights,
+	public Order(ObjectId hotelId, ObjectId customerId, int roomNumber, LocalDateTime startDate, int numberOfNights,
 			float totalPrice) {
 		super();
 		this.hotelId = hotelId;
 		this.customerId = customerId;
-		this.orderDate = orderDate;
+		this.roomNumber = roomNumber;
+		this.orderDate = LocalDateTime.now();
 		this.startDate = startDate;
 		this.numberOfNights = numberOfNights;
 		this.totalPrice = totalPrice;
@@ -47,20 +50,28 @@ public class Order {
 		this.id = id;
 	}
 
-	public int getHotelId() {
+	public ObjectId getHotelId() {
 		return hotelId;
 	}
 
-	public void setHotelId(int hotelId) {
+	public void setHotelId(ObjectId hotelId) {
 		this.hotelId = hotelId;
 	}
 
-	public int getCustomerId() {
+	public ObjectId getCustomerId() {
 		return customerId;
 	}
 
-	public void setCustomerId(int customerId) {
+	public void setCustomerId(ObjectId customerId) {
 		this.customerId = customerId;
+	}
+
+	public int getRoomNumber() {
+		return roomNumber;
+	}
+
+	public void setRoomNumber(int roomNumber) {
+		this.roomNumber = roomNumber;
 	}
 
 	public LocalDateTime getOrderDate() {
@@ -97,9 +108,9 @@ public class Order {
 
 	@Override
 	public String toString() {
-		return "Order [id=" + id + ", hotelId=" + hotelId + ", customerId=" + customerId + ", orderDate=" + orderDate
-				+ ", startDate=" + startDate + ", numberOfNights=" + numberOfNights + ", totalPrice=" + totalPrice
-				+ "]";
+		return "Order [id=" + id + ", hotelId=" + hotelId + ", customerId=" + customerId + ", roomNumber=" + roomNumber
+				+ ", orderDate=" + orderDate + ", startDate=" + startDate + ", numberOfNights=" + numberOfNights
+				+ ", totalPrice=" + totalPrice + "]";
 	}
 
 }

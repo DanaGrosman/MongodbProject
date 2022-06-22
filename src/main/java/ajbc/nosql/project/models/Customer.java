@@ -9,9 +9,9 @@ public class Customer {
 	private String firstName;
 	private String lastName;
 	private String country;
-	private List<Order> orders;
+	private List<ObjectId> orders;
 
-	public Customer(ObjectId id, String firstName, String lastName, String country, List<Order> orders) {
+	public Customer(ObjectId id, String firstName, String lastName, String country, List<ObjectId> orders) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -20,7 +20,7 @@ public class Customer {
 		this.orders = orders;
 	}
 
-	public Customer(String firstName, String lastName, String country, List<Order> orders) {
+	public Customer(String firstName, String lastName, String country, List<ObjectId> orders) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -63,11 +63,11 @@ public class Customer {
 		this.country = country;
 	}
 
-	public List<Order> getOrders() {
+	public List<ObjectId> getOrders() {
 		return orders;
 	}
 
-	public void setOrders(List<Order> orders) {
+	public void setOrders(List<ObjectId> orders) {
 		this.orders = orders;
 	}
 

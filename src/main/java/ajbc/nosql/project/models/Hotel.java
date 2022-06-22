@@ -14,10 +14,10 @@ public class Hotel {
 	private int rank;
 	private List<Room> rooms;
 	private float priceFerNight;
-	private List<Order> orders;
+	private List<ObjectId> orders;
 
 	public Hotel(ObjectId id, String name, String street, int number, String city, String country, int rank,
-			List<Room> rooms, float priceFerNight, List<Order> orders) {
+			List<Room> rooms, float priceFerNight, List<ObjectId> orders) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -32,7 +32,7 @@ public class Hotel {
 	}
 
 	public Hotel(String name, String street, int number, String city, String country, int rank, List<Room> rooms,
-			float priceFerNight, List<Order> orders) {
+			float priceFerNight, List<ObjectId> orders) {
 		super();
 		this.name = name;
 		this.street = street;
@@ -120,11 +120,11 @@ public class Hotel {
 		this.priceFerNight = priceFerNight;
 	}
 
-	public List<Order> getOrders() {
+	public List<ObjectId> getOrders() {
 		return orders;
 	}
 
-	public void setOrders(List<Order> orders) {
+	public void setOrders(List<ObjectId> orders) {
 		this.orders = orders;
 	}
 
