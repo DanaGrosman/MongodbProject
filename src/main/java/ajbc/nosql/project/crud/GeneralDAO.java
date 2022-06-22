@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
-import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
@@ -17,7 +15,6 @@ import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.InsertManyResult;
 import com.mongodb.client.result.InsertOneResult;
 
-import ajbc.nosql.project.DbManager.DBManager;
 import ajbc.nosql.project.models.Customer;
 import ajbc.nosql.project.models.Hotel;
 import ajbc.nosql.project.models.Order;
@@ -27,8 +24,7 @@ import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Updates.*;
-import static com.mongodb.client.model.Updates.combine;
-import static com.mongodb.client.model.Updates.set;
+import com.mongodb.client.model.Sorts.*;
 
 public class GeneralDAO {
 	private MongoCollection<Order> ordersCollection;
@@ -210,25 +206,48 @@ public class GeneralDAO {
 
 	public Order cancelOrderById(ObjectId orderId) {
 		Order order = ordersCollection.find(eq("_id", orderId)).first();
-		
-		Bson match = match(eq("_id", orderId));
-		Bson project = project(include("customerId", "hotelId"));
-		ObjectId customerId = ordersCollection.aggregate(Arrays.asList(match, project)).into(new ArrayList<>()).get(0)
-				.getCustomerId();
-		ObjectId hotelId = ordersCollection.aggregate(Arrays.asList(match, project)).into(new ArrayList<>()).get(0)
-				.getHotelId();
+		ObjectId hotelId = order.getHotelId();
+		int roomNumber = order.getRoomNumber();
+		List<Room> rooms = getHotelById(hotelId).getRooms();
 
 		// delete from ordersCollection
 		ordersCollection.findOneAndDelete(eq("_id", orderId));
 
-		// delete from customer
 		Bson pull = pull("orders", orderId);
-		customersCollection.findOneAndUpdate(eq("_id", customerId), pull);
-		
+		// delete from customer
+		customersCollection.findOneAndUpdate(eq("_id", order.getCustomerId()), pull);
+
 		// delete from hotel
-		hotelsCollection.findOneAndUpdate(eq("_id", hotelId), pull);
-		
+		hotelsCollection.findOneAndUpdate(eq("_id", order.getHotelId()), pull);
+
+		int roomIndex = findRoomIndex(rooms, roomNumber);
+
+		LocalDateTime localDateTime = order.getStartDate();
+		for (int i = 0; i < order.getNumberOfNights(); i++) {
+			localDateTime = localDateTime.plusDays(i);
+			pull = pull("rooms." + roomIndex + ".unavailableDates", localDateTime);
+			hotelsCollection.findOneAndUpdate(eq("_id", hotelId), pull);
+		}
+
 		return order;
+	}
+
+	private int findRoomIndex(List<Room> rooms, int roomNumber) {
+		int roomIndex = 0;
+		for (int i = 0; i < rooms.size(); i++) {
+			if (rooms.get(i).getNumber() == roomNumber) {
+				roomIndex = i;
+				break;
+			}
+		}
+		return roomIndex;
+	}
+
+	public List<Hotel> getSortedHotelsByTotalIncome() {
+		Bson pipeline = lookup("orders", "_id", "hotelId", "hotel_order");
+		List<Hotel> hotelsJoined = hotelsCollection.aggregate(Arrays.asList(pipeline)).into(new ArrayList<>());
+		hotelsJoined.forEach(System.out::println);
+		return null;
 	}
 
 }

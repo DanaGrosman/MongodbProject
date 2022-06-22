@@ -43,10 +43,12 @@ public class DBManager {
 
 	public void initOrdersCollection() {
 		List<Order> orders = Arrays.asList(
-				new Order(new ObjectId("62b2fb811b5519215052216e"), new ObjectId("62b2fb811b55192150522170"),
-						100, LocalDateTime.of(2022, 8, 25, 8, 0), 3, 3600f),
-				new Order(new ObjectId("62b2fb811b5519215052216e"), new ObjectId("62b2fb811b55192150522171"),
-						101, LocalDateTime.of(2022, 7, 25, 8, 0), 2, 2400f));
+				new Order(new ObjectId("62b2fb811b5519215052216f"), new ObjectId("62b2fb811b55192150522172"),
+						100, LocalDateTime.of(2022, 8, 25, 8, 0), 3, 2490f),
+				new Order(new ObjectId("62b2fb811b5519215052216f"), new ObjectId("62b2fb811b55192150522173"),
+						101, LocalDateTime.of(2022, 7, 15, 8, 0), 2, 1660f),
+				new Order(new ObjectId("62b2fb811b5519215052216f"), new ObjectId("62b2fb811b55192150522173"),
+						101, LocalDateTime.of(2022, 10, 20, 8, 0), 4, 3320f));
 
 		List<Order> orderDocs = dao.insertOrders(orders);
 		orderDocs.forEach(System.out::println);

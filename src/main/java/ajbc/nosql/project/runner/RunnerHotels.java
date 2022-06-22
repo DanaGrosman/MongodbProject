@@ -82,10 +82,15 @@ public class RunnerHotels {
 //			}
 
 			// Q5
-			cancelOrder(new ObjectId("62b3082d623a354897153b36"), dao);
+//			cancelOrder(new ObjectId("62b3706540c4df4364500f51"), dao);
 
-			//
+			// Q6
+			sortHotelsByTotalIncomes(dao);
 		}
+	}
+
+	private static void sortHotelsByTotalIncomes(GeneralDAO dao) {
+		List<Hotel> sortedHotels = dao.getSortedHotelsByTotalIncome();
 	}
 
 	private static void cancelOrder(ObjectId orderId, GeneralDAO dao) {
